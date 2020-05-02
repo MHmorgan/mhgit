@@ -1,0 +1,12 @@
+[package]
+name = "mhgit"
+version = "0.1.0"
+authors = ["m <mhmorgan42@gmail.com>"]
+edition = "2018"
+
+[badges]
+travis-ci = { repository = "MHmorgan/mhgit", branch = "master" }
+
+[dependencies]
+failure = "0.1.7"
+itertools = "0.9.0"
