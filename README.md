@@ -1,5 +1,4 @@
-MHgit
-====
+![MHgit](./mhgit.png)
 
 [![Travis CI build status](https://img.shields.io/travis/com/MHmorgan/mhgit/master?style=flat-square)](https://travis-ci.com/MHmorgan/mhgit)
 [![Crates.io latest version](https://img.shields.io/crates/v/mhgit?style=flat-square)](https://crates.io/crates/mhgit)
@@ -8,8 +7,23 @@ MHgit
 
 
 MHgit is a simple git library for interracting with git repositories. Provides an idiomatic and easy
-way of dealing with git repos. Requires git to be installed on the system. Internally calls it calls
-git and parses porcelain output.
+way of dealing with git repos.
+
+Requires git to be installed on the system.
+
+#### Supported actions
+
+* `add`
+* `clone`
+* `commit`
+* `init`
+* `notes`
+* `pull`
+* `push`
+* `remote`
+* `status`
+* `stash`
+* `tag`
 
 Usage
 -----
