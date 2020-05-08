@@ -1,0 +1,48 @@
+GIT-MULTI-PACK-IN(1)                                                                              Git Manual                                                                             GIT-MULTI-PACK-IN(1)
+
+NAME
+       git-multi-pack-index - Write and verify multi-pack-indexes
+
+SYNOPSIS
+       git multi-pack-index [--object-dir=<dir>] <verb>
+
+DESCRIPTION
+       Write or verify a multi-pack-index (MIDX) file.
+
+OPTIONS
+       --object-dir=<dir>
+           Use given directory for the location of Git objects. We check <dir>/packs/multi-pack-index for the current MIDX file, and <dir>/packs for the pack-files to index.
+
+       write
+           When given as the verb, write a new MIDX file to <dir>/packs/multi-pack-index.
+
+       verify
+           When given as the verb, verify the contents of the MIDX file at <dir>/packs/multi-pack-index.
+
+EXAMPLES
+       •   Write a MIDX file for the packfiles in the current .git folder.
+
+               $ git multi-pack-index write
+
+       •   Write a MIDX file for the packfiles in an alternate object store.
+
+               $ git multi-pack-index --object-dir <alt> write
+
+       •   Verify the MIDX file for the packfiles in the current .git folder.
+
+               $ git multi-pack-index verify
+
+SEE ALSO
+       See The Multi-Pack-Index Design Document[1] and The Multi-Pack-Index Format[2] for more information on the multi-pack-index feature.
+
+GIT
+       Part of the git(1) suite
+
+NOTES
+        1. The Multi-Pack-Index Design Document
+           file:///usr/share/doc/git/html/technical/multi-pack-index.html
+
+        2. The Multi-Pack-Index Format
+           file:///usr/share/doc/git/html/technical/pack-format.html
+
+Git 2.20.1                                                                                        04/20/2020                                                                             GIT-MULTI-PACK-IN(1)
