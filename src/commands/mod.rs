@@ -2,7 +2,7 @@
 
 use crate::{CommandOptions, GitError, Repository, Result};
 use failure::ResultExt;
-use std::process::{self, Command, Stdio, Output};
+use std::process::{self, Command, Output, Stdio};
 
 /// `git add` command.
 ///
@@ -104,7 +104,7 @@ impl CommandOptions for AddOptions {
 }
 
 /// `git clone` command.
-/// 
+///
 /// ```rust,no_run
 /// # fn main() -> Result<(), Box<dyn std::error::Error>> {
 /// use mhgit::commands::CloneOptions;
@@ -131,7 +131,7 @@ impl CloneOptions {
         }
     }
 
-    /// Point to given branch in cloned repository instead of HEAD. 
+    /// Point to given branch in cloned repository instead of HEAD.
     pub fn branch(&mut self, name: &str) -> &mut Self {
         self.branch = Some(name.to_string());
         self
@@ -182,18 +182,19 @@ impl CloneOptions {
                 cmd: "git clone".to_string(),
                 code: out.status.code(),
                 stderr: format_err!("{}", std::str::from_utf8(&out.stderr)?),
-            }.into())
+            }
+            .into())
         }
     }
 }
 
 /// `git commit` command.
-/// 
+///
 /// ```rust,no_run
 /// # fn main() -> Result<(), Box<dyn std::error::Error>> {
 /// use mhgit::{CommandOptions, Repository};
 /// use mhgit::commands::CommitOptions;
-/// 
+///
 /// let repo = Repository::new();
 /// CommitOptions::new()
 ///     .amend(true)
@@ -294,12 +295,12 @@ impl CommandOptions for CommitOptions {
 }
 
 /// `git notes` command.
-/// 
+///
 /// ```rust,no_run
 /// # fn main() -> Result<(), Box<dyn std::error::Error>> {
 /// use mhgit::{CommandOptions, Repository};
 /// use mhgit::commands::NotesOptions;
-/// 
+///
 /// let repo = Repository::new();
 /// NotesOptions::add()
 ///     .message("My note")
@@ -375,12 +376,12 @@ impl CommandOptions for NotesOptions {
 }
 
 /// `git pull` command.
-/// 
+///
 /// ```rust,no_run
 /// # fn main() -> Result<(), Box<dyn std::error::Error>> {
 /// use mhgit::{CommandOptions, Repository};
 /// use mhgit::commands::PullOptions;
-/// 
+///
 /// let repo = Repository::new();
 /// PullOptions::new()
 ///     .remote("origin")
@@ -459,12 +460,12 @@ impl CommandOptions for PullOptions {
 }
 
 /// `git push` command.
-/// 
+///
 /// ```rust,no_run
 /// # fn main() -> Result<(), Box<dyn std::error::Error>> {
 /// use mhgit::{CommandOptions, Repository};
 /// use mhgit::commands::PushOptions;
-/// 
+///
 /// let repo = Repository::new();
 /// PushOptions::new()
 ///     .run(&repo)?;
@@ -570,14 +571,13 @@ impl CommandOptions for PushOptions {
     }
 }
 
-
 /// `git remote` command.
-/// 
+///
 /// ```rust,no_run
 /// # fn main() -> Result<(), Box<dyn std::error::Error>> {
 /// use mhgit::{CommandOptions, Repository};
 /// use mhgit::commands::RemoteOptions;
-/// 
+///
 /// let repo = Repository::new();
 /// RemoteOptions::add()
 ///     .master("master")
@@ -634,15 +634,15 @@ impl CommandOptions for RemoteOptions {
     type Output = ();
 
     fn git_args(&self) -> Vec<&str> {
-        let mut args = vec!["remote", &self.name];
+        let mut args = vec!["remote", &self.action];
         if !self.master.is_empty() {
             args.push("-m");
             args.push(&self.master);
         }
         match &self.tags {
-            Some(true)  => args.push("--tags"),
+            Some(true) => args.push("--tags"),
             Some(false) => args.push("--no-tags"),
-            None        => (),
+            None => (),
         }
         args.push(&self.name);
         args.push(&self.url);
@@ -656,12 +656,12 @@ impl CommandOptions for RemoteOptions {
 }
 
 /// `git tag` command.
-/// 
+///
 /// ```rust,no_run
 /// # fn main() -> Result<(), Box<dyn std::error::Error>> {
 /// use mhgit::{CommandOptions, Repository};
 /// use mhgit::commands::TagOptions;
-/// 
+///
 /// let repo = Repository::new();
 /// TagOptions::add()
 ///     .msg("A new tag")
@@ -696,7 +696,7 @@ impl TagOptions {
         }
     }
 
-    /// Set tag message. 
+    /// Set tag message.
     pub fn msg(&mut self, msg: &str) -> &mut TagOptions {
         self.msg = msg.to_string();
         self
@@ -779,33 +779,125 @@ mod tests {
 
     #[test]
     fn commit() {
+        assert_eq!(CommitOptions::new().git_args(), vec!["commit", "-q"]);
         assert_eq!(
-            CommitOptions::new().git_args(),
-        )
+            CommitOptions::new()
+                .message("tull")
+                .all(true)
+                .allow_empty(true)
+                .amend(true)
+                .file("Makefile")
+                .files(vec!["foo.txt", "bar.txt"])
+                .git_args(),
+            vec![
+                "commit",
+                "-q",
+                "-m",
+                "tull",
+                "--all",
+                "--allow-empty",
+                "--amend",
+                "Makefile",
+                "foo.txt",
+                "bar.txt"
+            ]
+        );
     }
 
     #[test]
     fn notes() {
-        // TODO
+        assert_eq!(
+            NotesOptions::add()
+                .message("test")
+                .object("HEAD")
+                .git_args(),
+            vec!["notes", "add", "-m", "test", "HEAD"]
+        );
+        assert_eq!(
+            NotesOptions::append()
+                .message("test")
+                .object("HEAD")
+                .git_args(),
+            vec!["notes", "append", "-m", "test", "HEAD"]
+        );
+        assert_eq!(
+            NotesOptions::remove().object("HEAD").git_args(),
+            vec!["notes", "remove", "HEAD"]
+        );
     }
 
     #[test]
     fn pull() {
-        // TODO
+        assert_eq!(PullOptions::new().git_args(), vec!["pull", "-q"]);
+        assert_eq!(
+            PullOptions::new()
+                .allow_unrelated(true)
+                .remote("origin")
+                .refspec("master")
+                .git_args(),
+            vec!["pull", "-q", "--allow-unrelated", "origin", "master"]
+        );
     }
 
     #[test]
     fn push() {
-        // TODO
+        assert_eq!(PushOptions::new().git_args(), vec!["push", "-q"]);
+        assert_eq!(
+            PushOptions::new()
+                .all(true)
+                .tags(true)
+                .force(true)
+                .set_upstream(true)
+                .remote("origin")
+                .refspec("master")
+                .git_args(),
+            vec![
+                "push",
+                "-q",
+                "--all",
+                "--tags",
+                "--force",
+                "--set-upstream",
+                "origin",
+                "master"
+            ]
+        );
     }
 
     #[test]
     fn remote() {
-        // TODO
+        assert_eq!(
+            RemoteOptions::add()
+                .master("master")
+                .tags(true)
+                .name("origin")
+                .url("git://myrepo.com")
+                .git_args(),
+            vec![
+                "remote",
+                "add",
+                "-m",
+                "master",
+                "--tags",
+                "origin",
+                "git://myrepo.com"
+            ]
+        );
     }
 
     #[test]
     fn tag() {
-        // TODO
+        assert_eq!(
+            TagOptions::add()
+                .msg("testen")
+                .tagname("v1.0")
+                .object("HEAD")
+                .git_args(),
+            vec!["tag", "-m", "testen", "v1.0", "HEAD"]
+        );
+        assert_eq!(
+            TagOptions::delete().tagname("v1.0").git_args(),
+            vec!["tag", "-d", "v1.0"]
+        );
     }
 }
