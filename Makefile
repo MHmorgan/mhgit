@@ -4,9 +4,9 @@ install :
 	cargo install --path .
 
 test : export CARGO_INCREMENTAL=0
-test : export RUSTFLAGS=-Zprofile -Ccodegen-units=1 -Copt-level=0 -Clink-dead-code -Coverflow-checks=off -Zno-landing-pads
+test : export RUSTFLAGS=-Zprofile -Ccodegen-units=1 -Copt-level=0 -Clink-dead-code -Coverflow-checks=off -Zpanic_abort_tests -Cpanic=abort
 test :
-	rm ./target/debug/deps/*.gcda
+	rm -f ./target/debug/deps/*.gcda
 	cargo test --all-features
 
 coverage : test
