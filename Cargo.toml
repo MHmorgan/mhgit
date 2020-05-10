@@ -3,6 +3,12 @@ name = "mhgit"
 version = "0.1.0"
 authors = ["m <mhmorgan42@gmail.com>"]
 edition = "2018"
+description = "MHgit is a simple git library for interracting with git repositories."
+readme = "README.md"
+keywords = ["git", "version-control", "simple"]
+license = "BSD-3-Clause"
+repository = "https://github.com/MHmorgan/mhgit"
+documentation = "https://docs.rs/mhgit/"
 
 [badges]
 travis-ci = { repository = "MHmorgan/mhgit", branch = "master" }
