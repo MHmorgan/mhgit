@@ -25,8 +25,33 @@ Requires git to be installed on the system.
 * `stash`
 * `tag`
 
-Usage
------
+Example
+-------
+
+```run
+extern crate mhgit;
+
+use mhgit::{CommandOptions, Repository};
+use mhgit::commands::{PushOptions, RemoteOptions};
+
+fn main() -> Result<(), Box<dyn std::error::Error>> {
+    let repo = Repository::at("/home/mh/awesomeness")?
+        .init()?
+        .add()?
+        .commit("Initial commit")?;
+    RemoteOptions::add()
+        .master("master")
+        .name("upstream")
+        .url("https://web.com/myrepo.git")
+        .run(&repo)?;
+    PushOptions::new()
+        .set_upstream(true)
+        .remote("origin")
+        .refspec("master")
+        .run(&repo)?;
+    Ok(())
+}
+```
 
 
 Changelog
